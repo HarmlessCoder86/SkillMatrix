@@ -1024,7 +1024,7 @@ async def list_skills(user: dict = Depends(get_current_user)):
             FROM skills s
             JOIN skill_categories sc ON sc.id = s.category_id
             WHERE s.is_active = TRUE AND sc.is_active = TRUE
-            ORDER BY sc.sort_order, s.sort_order
+            ORDER BY sc.sort_order, s.name
         """)
     return [dict(r) for r in rows]
 
@@ -1320,7 +1320,7 @@ async def get_matrix(department: str | None = None, category_id: int | None = No
         if category_id:
             skill_query += " AND s.category_id = $1"
             skill_params.append(category_id)
-        skill_query += " ORDER BY sc.sort_order, s.sort_order"
+        skill_query += " ORDER BY sc.sort_order, s.name"
         skills = [dict(r) for r in await conn.fetch(skill_query, *skill_params)]
 
         # Get assessments
@@ -1402,7 +1402,7 @@ async def get_employee_profile(employee_id: int, user: dict = Depends(get_curren
             LEFT JOIN role_skill_requirements rsr
                 ON rsr.skill_id = a.skill_id AND rsr.role_name = $2
             WHERE a.employee_id = $1 AND s.is_active = TRUE AND sc.is_active = TRUE
-            ORDER BY sc.sort_order, s.sort_order
+            ORDER BY sc.sort_order, s.name
         """, employee_id, emp["role"])
 
         rows = [dict(r) for r in assessments]
@@ -1473,7 +1473,7 @@ async def export_matrix(department: str | None = None, category_id: int | None =
         if category_id:
             skill_query += " AND s.category_id = $1"
             skill_params.append(category_id)
-        skill_query += " ORDER BY sc.sort_order, s.sort_order"
+        skill_query += " ORDER BY sc.sort_order, s.name"
         skills = [dict(r) for r in await conn.fetch(skill_query, *skill_params)]
 
         # Get assessments

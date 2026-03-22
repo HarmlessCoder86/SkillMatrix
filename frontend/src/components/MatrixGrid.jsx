@@ -41,13 +41,13 @@ function buildTree(skills, categories) {
     }
   })
 
-  Object.values(byId).forEach((n) => n.children.sort((a, b) => a.sort_order - b.sort_order))
+  Object.values(byId).forEach((n) => n.children.sort((a, b) => a.name.localeCompare(b.name)))
 
   return categories
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((cat) => ({
       ...cat,
-      skills: (roots[cat.id] || []).sort((a, b) => a.sort_order - b.sort_order),
+      skills: (roots[cat.id] || []).sort((a, b) => a.name.localeCompare(b.name)),
     }))
 }
 
