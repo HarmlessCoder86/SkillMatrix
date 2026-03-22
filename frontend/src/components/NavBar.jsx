@@ -45,13 +45,16 @@ export default function NavBar() {
           <div style={{ position: 'relative' }}
             onMouseEnter={() => setShowAdmin(true)}
             onMouseLeave={() => setShowAdmin(false)}>
-            <span style={{ ...linkStyle(isAdminActive), cursor: 'pointer' }}>
+            <span
+              onClick={() => setShowAdmin((v) => !v)}
+              style={{ ...linkStyle(isAdminActive), cursor: 'pointer' }}
+            >
               Admin &#9662;
             </span>
             {showAdmin && (
               <div style={{
                 position: 'absolute', top: '100%', left: 0, background: '#333333',
-                borderRadius: 6, padding: '4px 0', minWidth: 160, marginTop: 4,
+                borderRadius: 6, padding: '4px 0', minWidth: 160, paddingTop: 4,
                 boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
               }}>
                 <Link to="/admin/users" style={{
