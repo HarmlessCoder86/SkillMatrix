@@ -1,0 +1,17 @@
+{$DOMAIN:localhost} {
+    header {
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-XSS-Protection "1; mode=block"
+        -Server
+    }
+
+    handle /api/* {
+        reverse_proxy api:8000
+    }
+
+    handle {
+        reverse_proxy frontend:80
+    }
+}
