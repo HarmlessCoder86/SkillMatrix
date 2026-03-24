@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth, canAccess } from '../lib/auth'
 
@@ -6,6 +6,18 @@ export default function NavBar() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [showAdmin, setShowAdmin] = useState(false)
+  const closeTimer = useRef(null)
+
+  const openAdmin = () => {
+    clearTimeout(closeTimer.current)
+    setShowAdmin(true)
+  }
+  const startCloseAdmin = () => {
+    closeTimer.current = setTimeout(() => setShowAdmin(false), 150)
+  }
+
+  // Close dropdown on route change
+  useEffect(() => { setShowAdmin(false) }, [location.pathname])
 
   if (!user) return null
 
@@ -43,8 +55,8 @@ export default function NavBar() {
 
         {canAccess(user.role, 'admin') && (
           <div style={{ position: 'relative' }}
-            onMouseEnter={() => setShowAdmin(true)}
-            onMouseLeave={() => setShowAdmin(false)}>
+            onMouseEnter={openAdmin}
+            onMouseLeave={startCloseAdmin}>
             <span
               onClick={() => setShowAdmin((v) => !v)}
               style={{ ...linkStyle(isAdminActive), cursor: 'pointer' }}
