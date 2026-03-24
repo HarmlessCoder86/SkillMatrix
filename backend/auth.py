@@ -122,14 +122,26 @@ def can_confirm(role: str) -> bool:
 async def get_user_scope(conn, employee_id: int, role: str) -> list[int]:
     """Return list of employee IDs this user can see based on role and reporting chain.
 
-    - Admin/Manager: all employees
+    - Admin: all employees
+    - Manager: employees in their department
     - Supervisor: direct reports + reports through their leads
     - Trainer/Lead: directly assigned employees
     - Operator: only themselves
     """
-    if role in ("admin", "manager"):
+    if role == "admin":
         rows = await conn.fetch("SELECT id FROM employees WHERE is_active = TRUE")
         return [r["id"] for r in rows]
+
+    if role == "manager":
+        # Managers scoped to their department
+        mgr = await conn.fetchrow("SELECT department FROM employees WHERE id = $1", employee_id)
+        if mgr and mgr["department"]:
+            rows = await conn.fetch(
+                "SELECT id FROM employees WHERE is_active = TRUE AND department = $1",
+                mgr["department"],
+            )
+            return [r["id"] for r in rows]
+        return [employee_id]
 
     if role == "supervisor":
         # Direct reports + reports of leads who report to this supervisor
